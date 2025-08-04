@@ -1,4 +1,4 @@
-PLAYERS_WB = "test_players.xlsx"
+PLAYERS_WB = "player_data.xlsx"
 YES = "Y"
 
 FIRST_NAME = "First Name"

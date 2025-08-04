@@ -1,18 +1,15 @@
 from partition_constants import *
 
 
-"""LOADING DATA FUNCTIONS"""
-
 """
-get data from worksheet as dict with columns as fields of each element.
-keys are in the form "First Name_Last Name".
+get data from worksheet as dict with first column values as keys, and top row as fields of each element.
 """
 def getData(ws):
     data = {}
     cols = [cell.value for cell in ws[1]]
 
     r = 2
-    key = getKey(ws, r)
+    key = ws.cell(column=1, row=r).value
 
     while key:
         element = {}
@@ -27,19 +24,9 @@ def getData(ws):
             data[key] = element
 
         r += 1
-        key = getKey(ws, r)
+        key = ws.cell(column=1, row=r).value
 
     return data
-
-
-"""
-get key formed from first 2 columns in the form "First Name_Last Name"
-"""
-def getKey(ws, r):
-    if not ws.cell(column=1, row=r).value:
-        return None
-
-    return ws.cell(column=1, row=r).value + "_" + ws.cell(column=2, row=r).value
 
 
 
