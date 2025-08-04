@@ -1,3 +1,6 @@
+from partition_constants import *
+
+
 """LOADING DATA FUNCTIONS"""
 
 """
@@ -43,10 +46,10 @@ def getKey(ws, r):
 """INTERPRETING PLAYER DATA FUNCTIONS"""
 
 def isSenior(player):
-    return player["Senior"] == YES
+    return player[SENIOR] == YES
 
 def isSetter(player):
-    return player["Setter"] == YES
+    return player[SETTER] == YES
 
 
 """
