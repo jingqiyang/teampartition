@@ -48,3 +48,22 @@ def isSenior(player):
 def isSetter(player):
     return player["Setter"] == YES
 
+
+"""
+convert yankee rating to numerical score.
+"""
+def getScore(rating):
+    letter = rating[0].upper()
+    if letter < "A" or letter > "D":
+        print("warning: invalid yankee letter rating")
+        return None
+
+    # use ascii value of letter with D as min score of 0
+    score = 68 - ord(letter)
+
+    if rating.endswith("-"):
+        return score - 1/3
+    elif rating.endswith("+"):
+        return score + 1/3
+    return score
+

@@ -16,9 +16,8 @@ def main():
     players = getData(players_ws)
 
     for player in players:
-        print(player + ": ")
-        print(players[player])
-        print()
+        rating = players[player]["Offense"]
+        print(player + ": " + rating + " = " + str(round(getScore(rating), 2)))
 
 
 if __name__ == '__main__':
