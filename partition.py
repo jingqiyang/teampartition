@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from openpyxl import load_workbook
+from math import ceil
 
 from partition_constants import *
 from partition_utils import *
@@ -25,6 +26,8 @@ def main():
     m_setters, m_seniors, m_young_hitters = partitionByType(men, players)
 
     printScores([w_setters, w_seniors, w_young_hitters, m_setters, m_seniors, m_young_hitters], players)
+
+    teams = initTeams(len(players))
 
 
 """

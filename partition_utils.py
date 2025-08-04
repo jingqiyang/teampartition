@@ -1,3 +1,5 @@
+from math import ceil
+
 from partition_constants import *
 
 
@@ -77,3 +79,46 @@ def splitList(original_list, f):
 
     return sub_list, original_list
 
+
+
+"""TEAM LIST MANIPULAITON FUNCTIONS"""
+
+"""
+create list of empty teams.
+"""
+def initTeams(num_players):
+    return [set() for x in range(0, ceil(num_players / MAX_TEAM_SIZE))]
+
+
+"""
+change order of teams for reseeding.
+"""
+def rearrangeTeams(teams):
+    # TODO
+    return teams
+
+
+"""
+sort teams by average player score.
+"""
+def sortTeams(teams, players):
+    return sorted(teams, key=lambda t: getTeamScore(t, players))
+
+
+"""
+print average player score of each team.
+"""
+def printTeamScores(teams, players):
+    for team in teams:
+        if len(team) == 0:
+            print("warning: empty team")
+            continue
+
+        print("team score: " + str(getTeamScore(team, players)))
+
+
+"""
+get average overall score of players of a team.
+"""
+def getTeamScore(team, players):
+    return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
