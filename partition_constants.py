@@ -1,5 +1,6 @@
 PLAYERS_WB = "player_data.xlsx"
 YES = "Y"
+F = "F"
 
 FIRST_NAME = "First Name"
 LAST_NAME = "Last Name"

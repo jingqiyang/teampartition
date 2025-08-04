@@ -1,6 +1,8 @@
 from partition_constants import *
 
 
+"""LOAD DATA FUNCTIONS"""
+
 """
 get data from worksheet as dict with first column values as keys, and top row as fields of each element.
 """
@@ -56,4 +58,22 @@ def getScore(rating):
     elif rating.endswith("+"):
         return score + 1/3
     return score
+
+
+
+
+"""DATA MANIPULATION FUNCTIONS"""
+
+"""
+partition a sub list from an original list based on a lambda function returning true for each element.
+the elements of the sub list are removed from the original list.
+"""
+def splitList(original_list, f):
+    sub_list = []
+    for i in range(len(original_list) - 1, -1, -1):
+        if f(original_list[i]):
+            element = original_list.pop(i)
+            sub_list.insert(0, element)
+
+    return sub_list, original_list
 
