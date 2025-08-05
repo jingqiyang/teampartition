@@ -1,4 +1,4 @@
-PLAYERS_WB = "player_data.xlsx"
+TEST_WB = "test_data.xlsx"
 YES = "Y"
 F = "F"
 MAX_TEAM_SIZE = 8

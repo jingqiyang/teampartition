@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from math import ceil
 from openpyxl import load_workbook
 from statistics import stdev
+import sys
 
 from partition_constants import *
 
@@ -13,10 +14,12 @@ year = str(now.year)
 ###### LOAD DATA FUNCTIONS ######
 
 """
-get dict player data from excel workbook.
+get dict player data from command line input or default test excel workbook.
 """
 def getPlayers():
-    players_wb = load_workbook(PLAYERS_WB, data_only=True)
+    wb_file = sys.argv[1] if len(sys.argv) > 1 else TEST_WB
+
+    players_wb = load_workbook(wb_file, data_only=True)
     players_ws = players_wb[year]
     players = getData(players_ws)
 
