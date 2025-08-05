@@ -233,14 +233,16 @@ def finalSwaps(teams, players):
     # swap players at same index across teams with major to minor score difference
     for i in range(0, len(teams[0])):
         for j in range(0, int(len(teams) / 2)):
-            swap(teams[j], i, teams[-1 - j], i, players)
-            new_std = getTeamStd(teams, players)
+            # try swap with adjacent indices
+            for k in range(i - 1, i + 2):
+                swap(teams[j], i, teams[-1 - j], k, players)
+                new_std = getTeamStd(teams, players)
 
-            if new_std < std:
-                std = new_std
-            else:
-                # swap back if no improvement
-                swap(teams[j], i, teams[-1 - j], i, players)
+                if new_std < std:
+                    std = new_std
+                else:
+                    # swap back if no improvement
+                    swap(teams[j], i, teams[-1 - j], k, players)
 
         sortTeams(teams, players)
 
@@ -256,8 +258,7 @@ def getTeamStd(teams, players):
 swap player from team a at index a with player from team b at index b.
 """
 def swap(team_a, a, team_b, b, players):
-    # no swap if index out of bounds
-    if len(team_a) <= a or len(team_b) <= b:
+    if not playersMatch(team_a, a, team_b, b, players):
         return
 
     player_a = team_a[a]
@@ -266,6 +267,24 @@ def swap(team_a, a, team_b, b, players):
     if noConflict(players[player_a], team_b) and noConflict(players[player_b], team_a):
         team_a[a] = player_b
         team_b[b] = player_a
+
+
+"""
+determine if players have matching characteristics to allow a swap.
+"""
+def playersMatch(team_a, a, team_b, b, players):
+    # no swap if index out of bounds
+    if len(team_a) <= a or len(team_b) <= b:
+        return False
+
+    player_a = team_a[a]
+    player_b = team_b[b]
+
+    for field in [GENDER, SENIOR, SETTER]:
+        if players[player_a][field] != players[player_b][field]:
+            return False
+
+    return True
 
 
 """
