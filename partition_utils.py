@@ -98,14 +98,21 @@ def splitList(original_list, f):
 """TEAM LIST MANIPULAITON FUNCTIONS"""
 
 """
-create list of empty teams.
+create list of empty team lists.
+"""
+# def initTeamLists(num_players):
+#     return [[] for x in range(0, ceil(num_players / MAX_TEAM_SIZE))]
+
+
+"""
+create list of empty team sets.
 """
 def initTeams(num_players):
     return [set() for x in range(0, ceil(num_players / MAX_TEAM_SIZE))]
 
 
 """
-change order of teams for reseeding.
+invert a list of teams so the outer values are on the inside and vice versa.
 """
 def invert(teams):
     midpoint = int(len(teams) / 2)
@@ -132,18 +139,45 @@ def assignPlayers(player_keys, teams, players):
 
 
 """
-assign a list of players directly to the teams in sequential order.
-the number of players should be less than or equal to the number of teams.
+assign a list of players to the teams in sequential order.
 """
 def assignSequential(player_keys, teams, players):
     i = 0
-    for team in teams:
-        # TODO: handle conflicts
-        if i >= len(player_keys):
-            return
 
-        team.add(player_keys[i])
-        i += 1
+    for p in player_keys:
+        added_player = False
+
+        while not added_player:
+            if i == len(teams):
+                i = 0
+
+            team = teams[i]
+            # TODO: handle conflicts
+
+            if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
+                team.add(p)
+                added_player = True
+
+            i += 1
+
+
+"""
+assign players to teams in a snaking pattern.
+"""
+# def assignPlayers(player_keys, teams, players):
+#     i = 0
+#     for p in player_keys:
+#         # TODO: handle conflicts
+#         if i == len(teams):
+#             teams.reverse()
+#             i = 0
+
+#         teams[i].add(p)
+#         i += 1
+
+#     # retain original team order
+#     if ceil(len(player_keys) / len(teams)) % 2 == 0:
+#         teams.reverse()
 
 
 """
