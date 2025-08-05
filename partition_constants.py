@@ -11,5 +11,7 @@ DEFENSE = "Defense"
 SETTING = "Setting"
 SETTER = "Setter"
 SENIOR = "Senior"
+CONFLICT = "Conflict"
+CONFLICTS = "Conflicts"
 
 OVERALL = "Overall"

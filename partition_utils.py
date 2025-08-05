@@ -99,10 +99,42 @@ def rearrangeTeams(teams):
 
 
 """
+recursively assign players to teams by first assigning the start and end of the player list.
+"""
+def assignPlayers(player_keys, teams, players):
+    num_teams = len(teams)
+    num_players = len(player_keys)
+
+    # base case and repeat every recursive iteration: assign "outer rows" of players
+    sortTeams(teams, players)
+    assignSequential(player_keys[:num_teams], teams, players)
+    assignSequential(list(reversed(player_keys[num_teams:])), teams, players)
+
+    # assign inner rows
+    if num_players > num_teams * 2:
+        assignPlayers(player_keys[num_teams:-num_teams], teams, players)
+
+
+"""
+assign a list of players directly to the teams in sequential order.
+the number of players should be less than or equal to the number of teams.
+"""
+def assignSequential(player_keys, teams, players):
+    i = 0
+    for team in teams:
+        # TODO: handle conflicts
+        if i >= len(player_keys):
+            return
+
+        team.add(player_keys[i])
+        i += 1
+
+
+"""
 sort teams by average player score.
 """
 def sortTeams(teams, players):
-    return sorted(teams, key=lambda t: getTeamScore(t, players))
+    teams.sort(key=lambda t: getTeamScore(t, players))
 
 
 """
@@ -114,11 +146,15 @@ def printTeamScores(teams, players):
             print("warning: empty team")
             continue
 
-        print("team score: " + str(getTeamScore(team, players)))
+        for player in team:
+            print(player)
+        print("team score: " + str(round(getTeamScore(team, players), 2)) + "\n")
 
 
 """
 get average overall score of players of a team.
 """
 def getTeamScore(team, players):
+    if len(team) == 0:
+        return 0
     return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
