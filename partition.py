@@ -26,14 +26,16 @@ def main():
     m_groups = partitionByType(men, players)
 
     player_groups = w_groups + m_groups
-    printScores(player_groups, players)
+    # printScores(player_groups, players)
 
     # form teams
     teams = initTeams(len(players))
     for group in player_groups:
         assignPlayers(group, teams, players)
+        teams = invert(teams)
 
     print("Teams:")
+    sortTeams(teams, players)
     printTeamScores(teams, players)
 
 
@@ -56,13 +58,6 @@ def partitionByType(player_keys, players):
     seniors, young_hitters = splitList(hitters, lambda p: isSenior(players[p]))
 
     return setters, seniors, young_hitters
-
-
-def printScores(player_groups, players):
-    for player_keys in player_groups:
-        for p in player_keys:
-            print(p + ": " + str(round(players[p][OVERALL], 2)))
-        print()
 
 
 if __name__ == '__main__':

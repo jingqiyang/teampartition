@@ -61,7 +61,21 @@ def getScore(rating):
         return score + 1/3
     return score
 
+"""
+get float score value as string.
+"""
+def getScoreString(score):
+    return str(round(score, 2))
 
+
+"""
+print all scores of players in gender/position/age groups.
+"""
+def printScores(player_groups, players):
+    for player_keys in player_groups:
+        for p in player_keys:
+            print(p + ": " + getScoreString(players[p][OVERALL]))
+        print()
 
 
 """DATA MANIPULATION FUNCTIONS"""
@@ -93,9 +107,10 @@ def initTeams(num_players):
 """
 change order of teams for reseeding.
 """
-def rearrangeTeams(teams):
-    # TODO
-    return teams
+def invert(teams):
+    midpoint = int(len(teams) / 2)
+
+    return list(reversed(teams[:midpoint])) + list(reversed(teams[midpoint:]))
 
 
 """
@@ -106,7 +121,8 @@ def assignPlayers(player_keys, teams, players):
     num_players = len(player_keys)
 
     # base case and repeat every recursive iteration: assign "outer rows" of players
-    sortTeams(teams, players)
+    if num_players < num_teams:
+        sortTeams(teams, players, reverse=True)
     assignSequential(player_keys[:num_teams], teams, players)
     assignSequential(list(reversed(player_keys[num_teams:])), teams, players)
 
@@ -133,8 +149,8 @@ def assignSequential(player_keys, teams, players):
 """
 sort teams by average player score.
 """
-def sortTeams(teams, players):
-    teams.sort(key=lambda t: getTeamScore(t, players))
+def sortTeams(teams, players, reverse=False):
+    teams.sort(key=lambda t: getTeamScore(t, players), reverse=reverse)
 
 
 """
@@ -146,9 +162,9 @@ def printTeamScores(teams, players):
             print("warning: empty team")
             continue
 
-        for player in team:
-            print(player)
-        print("team score: " + str(round(getTeamScore(team, players), 2)) + "\n")
+        for p in team:
+            print(p + " " + getScoreString(players[p][OVERALL]))
+        print("Team Score: " + getScoreString(getTeamScore(team, players)) + " (size " + str(len(team)) + ")\n")
 
 
 """
@@ -158,3 +174,4 @@ def getTeamScore(team, players):
     if len(team) == 0:
         return 0
     return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
+
