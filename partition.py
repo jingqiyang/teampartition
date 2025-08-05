@@ -17,7 +17,7 @@ def main():
     for group in player_groups:
         assignTeams(group, teams, players)
 
-    sortTeams(teams, players)
+    finalSwaps(teams, players)
     printTeamScores(teams, players)
 
 

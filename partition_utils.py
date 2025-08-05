@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from math import ceil
 from openpyxl import load_workbook
+from statistics import stdev
 
 from partition_constants import *
 
@@ -206,16 +207,74 @@ determine if a player can be added to a team.
 def okToAdd(team, player, teams, players):
     # check for acceptable team size
     if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
-        team = set(team)
-
-        for conflict_p in player[CONFLICTS]:
-            if conflict_p in team:
-                return False
-
-        # no conflicts
-        return True
+        return noConflict(player, set(team))
 
     return False
+
+
+"""
+check if a player has no conflict with existing members of a team.
+"""
+def noConflict(player, team):
+    for p in player[CONFLICTS]:
+        if p in team:
+            return False
+
+    return True
+
+
+"""
+make swaps to decrease team score standard deviation.
+"""
+def finalSwaps(teams, players):
+    sortTeams(teams, players)
+    std = getTeamStd(teams, players)
+
+    # swap players at same index across teams with major to minor score difference
+    for i in range(0, len(teams[0])):
+        for j in range(0, int(len(teams) / 2)):
+            swap(teams[j], i, teams[-1 - j], i, players)
+            new_std = getTeamStd(teams, players)
+
+            if new_std < std:
+                std = new_std
+            else:
+                # swap back if no improvement
+                swap(teams[j], i, teams[-1 - j], i, players)
+
+        sortTeams(teams, players)
+
+
+"""
+get standard deviation of all teams' scores.
+"""
+def getTeamStd(teams, players):
+    return stdev(map(lambda t: getTeamScore(t, players), teams))
+
+
+"""
+swap player from team a at index a with player from team b at index b.
+"""
+def swap(team_a, a, team_b, b, players):
+    # no swap if index out of bounds
+    if len(team_a) <= a or len(team_b) <= b:
+        return
+
+    player_a = team_a[a]
+    player_b = team_b[b]
+
+    if noConflict(players[player_a], team_b) and noConflict(players[player_b], team_a):
+        team_a[a] = player_b
+        team_b[b] = player_a
+
+
+"""
+get average overall score of players of a team.
+"""
+def getTeamScore(team, players):
+    if len(team) == 0:
+        return 0
+    return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
 
 
 """
@@ -230,15 +289,6 @@ def printTeamScores(teams, players):
         for p in team:
             print(p + " " + getScoreString(players[p][OVERALL]))
         print("Team Score: " + getScoreString(getTeamScore(team, players)) + " (size " + str(len(team)) + ")\n")
-
-
-"""
-get average overall score of players of a team.
-"""
-def getTeamScore(team, players):
-    if len(team) == 0:
-        return 0
-    return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
 
 
 
@@ -285,7 +335,6 @@ def getTeamScore(team, players):
 #                 i = 0
 
 #             team = teams[i]
-#             # TODO: handle conflicts
 
 #             if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
 #                 team.append(p)
