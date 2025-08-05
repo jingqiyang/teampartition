@@ -17,7 +17,10 @@ get dict player data from excel workbook.
 def getPlayers():
     players_wb = load_workbook(PLAYERS_WB, data_only=True)
     players_ws = players_wb[year]
-    return getData(players_ws)
+    players = getData(players_ws)
+
+    mergeConflicts(players)
+    return players
 
 
 """
@@ -46,6 +49,32 @@ def getData(ws):
         key = ws.cell(column=1, row=r).value
 
     return data
+
+
+"""
+combine player conflicts into 1 set and check for one-sided conflicts.
+"""
+def mergeConflicts(players):
+    # initialize empty set of conflicts for each player
+    for p in players:
+        players[p][CONFLICTS] = set()
+
+    for p in players:
+        player = players[p]
+
+        # construct excel column "Conflict 1", "Conflict 2", etc
+        i = 1
+        conflict_key = CONFLICT + " " + str(i)
+
+        while conflict_key in player and player[conflict_key]:
+            conflict_p = player[conflict_key]
+            player[CONFLICTS].add(conflict_p)
+
+            # make it a mutual conflict
+            players[conflict_p][CONFLICTS].add(p)
+
+            i += 1
+            conflict_key = CONFLICT + " " + str(i)
 
 
 
@@ -157,7 +186,7 @@ def assignTeams(player_keys, teams, players):
 
             # don't add to team with more players until all teams reach same number of players
             team = teams[i]
-            if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
+            if okToAdd(team, players[p], teams, players):
                 team.append(p)
                 added_player = True
 
@@ -169,6 +198,24 @@ sort teams by average player score.
 """
 def sortTeams(teams, players, reverse=False):
     teams.sort(key=lambda t: getTeamScore(t, players), reverse=reverse)
+
+
+"""
+determine if a player can be added to a team.
+"""
+def okToAdd(team, player, teams, players):
+    # check for acceptable team size
+    if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
+        team = set(team)
+
+        for conflict_p in player[CONFLICTS]:
+            if conflict_p in team:
+                return False
+
+        # no conflicts
+        return True
+
+    return False
 
 
 """
