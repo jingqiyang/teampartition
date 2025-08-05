@@ -22,15 +22,18 @@ def main():
 
     # split by gender, setting, senior
     women, men = splitList(player_keys, lambda p: players[p][GENDER] == F)
-    w_setters, w_seniors, w_young_hitters = partitionByType(women, players)
-    m_setters, m_seniors, m_young_hitters = partitionByType(men, players)
+    w_groups = partitionByType(women, players)
+    m_groups = partitionByType(men, players)
 
-    printScores([w_setters, w_seniors, w_young_hitters, m_setters, m_seniors, m_young_hitters], players)
+    player_groups = w_groups + m_groups
+    printScores(player_groups, players)
 
+    # form teams
     teams = initTeams(len(players))
-    assignPlayers(w_setters, teams, players)
+    for group in player_groups:
+        assignPlayers(group, teams, players)
 
-    sortTeams(teams, players)
+    print("Teams:")
     printTeamScores(teams, players)
 
 
@@ -55,8 +58,8 @@ def partitionByType(player_keys, players):
     return setters, seniors, young_hitters
 
 
-def printScores(player_key_groups, players):
-    for player_keys in player_key_groups:
+def printScores(player_groups, players):
+    for player_keys in player_groups:
         for p in player_keys:
             print(p + ": " + str(round(players[p][OVERALL], 2)))
         print()
