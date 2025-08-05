@@ -1,9 +1,24 @@
+from datetime import datetime, timedelta
 from math import ceil
+from openpyxl import load_workbook
 
 from partition_constants import *
 
+# current time
+now = datetime.now()
+year = str(now.year)
 
-"""LOAD DATA FUNCTIONS"""
+
+###### LOAD DATA FUNCTIONS ######
+
+"""
+get dict player data from excel workbook.
+"""
+def getPlayers():
+    players_wb = load_workbook(PLAYERS_WB, data_only=True)
+    players_ws = players_wb[year]
+    return getData(players_ws)
+
 
 """
 get data from worksheet as dict with first column values as keys, and top row as fields of each element.
@@ -34,7 +49,7 @@ def getData(ws):
 
 
 
-"""INTERPRETING PLAYER DATA FUNCTIONS"""
+###### INTERPRETING PLAYER DATA FUNCTIONS ######
 
 def isSenior(player):
     return player[SENIOR] == YES
@@ -61,6 +76,18 @@ def getScore(rating):
         return score + 1/3
     return score
 
+
+"""
+get overall player score as a sum of offense/setting and defense, adjusted by if they're a senior.
+"""
+def getOverallScore(player):
+    defense_rating = player[DEFENSE]
+    offense_rating = player[SETTING] if isSetter(player) else player[OFFENSE]
+    senior_modifier = -1/3 if isSenior(player) else 0
+
+    player[OVERALL] = getScore(offense_rating) + getScore(defense_rating) + senior_modifier
+
+
 """
 get float score value as string.
 """
@@ -78,7 +105,8 @@ def printScores(player_groups, players):
         print()
 
 
-"""DATA MANIPULATION FUNCTIONS"""
+
+###### DATA MANIPULATION FUNCTIONS ######
 
 """
 partition a sub list from an original list based on a lambda function returning true for each element.
@@ -95,7 +123,7 @@ def splitList(original_list, f):
 
 
 
-"""TEAM LIST MANIPULAITON FUNCTIONS"""
+###### TEAM LIST MANIPULAITON FUNCTIONS ######
 
 """
 create list of empty team lists.
@@ -112,59 +140,9 @@ def initTeamSets(num_players):
 
 
 """
-invert a list of teams so the outer values are on the inside and vice versa.
-"""
-def invert(teams):
-    midpoint = int(len(teams) / 2)
-
-    return list(reversed(teams[:midpoint])) + list(reversed(teams[midpoint:]))
-
-
-# """
-# recursively assign players to teams by first assigning the start and end of the player list.
-# """
-# def assignPlayers(player_keys, teams, players):
-#     num_teams = len(teams)
-#     num_players = len(player_keys)
-
-#     # base case and repeat every recursive iteration: assign "outer rows" of players
-#     if num_players < num_teams:
-#         sortTeams(teams, players, reverse=True)
-#     assignSequential(player_keys[:num_teams], teams, players)
-#     assignSequential(list(reversed(player_keys[num_teams:])), teams, players)
-
-#     # assign inner rows
-#     if num_players > num_teams * 2:
-#         assignPlayers(player_keys[num_teams:-num_teams], teams, players)
-
-
-# """
-# assign a list of players to the teams in sequential order.
-# """
-# def assignSequential(player_keys, teams, players):
-#     i = 0
-
-#     for p in player_keys:
-#         added_player = False
-
-#         while not added_player:
-#             if i == len(teams):
-#                 i = 0
-
-#             team = teams[i]
-#             # TODO: handle conflicts
-
-#             if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
-#                 team.append(p)
-#                 added_player = True
-
-#             i += 1
-
-
-"""
 assign players to teams in a snaking pattern.
 """
-def assignPlayers(player_keys, teams, players):
+def assignTeams(player_keys, teams, players):
     i = 0
     sortTeams(teams, players, reverse=True)
 
@@ -215,3 +193,55 @@ def getTeamScore(team, players):
         return 0
     return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
 
+
+
+###### OBSELETE FUNCTIONS ######
+
+# """
+# invert a list of teams so the outer values are on the inside and vice versa.
+# """
+# def invert(teams):
+#     midpoint = int(len(teams) / 2)
+
+#     return list(reversed(teams[:midpoint])) + list(reversed(teams[midpoint:]))
+
+
+# """
+# recursively assign players to teams by first assigning the start and end of the player list.
+# """
+# def assignPlayers(player_keys, teams, players):
+#     num_teams = len(teams)
+#     num_players = len(player_keys)
+
+#     # base case and repeat every recursive iteration: assign "outer rows" of players
+#     if num_players < num_teams:
+#         sortTeams(teams, players, reverse=True)
+#     assignSequential(player_keys[:num_teams], teams, players)
+#     assignSequential(list(reversed(player_keys[num_teams:])), teams, players)
+
+#     # assign inner rows
+#     if num_players > num_teams * 2:
+#         assignPlayers(player_keys[num_teams:-num_teams], teams, players)
+
+
+# """
+# assign a list of players to the teams in sequential order.
+# """
+# def assignSequential(player_keys, teams, players):
+#     i = 0
+
+#     for p in player_keys:
+#         added_player = False
+
+#         while not added_player:
+#             if i == len(teams):
+#                 i = 0
+
+#             team = teams[i]
+#             # TODO: handle conflicts
+
+#             if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
+#                 team.append(p)
+#                 added_player = True
+
+#             i += 1
