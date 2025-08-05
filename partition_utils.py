@@ -120,64 +120,70 @@ def invert(teams):
     return list(reversed(teams[:midpoint])) + list(reversed(teams[midpoint:]))
 
 
-"""
-recursively assign players to teams by first assigning the start and end of the player list.
-"""
-def assignPlayers(player_keys, teams, players):
-    num_teams = len(teams)
-    num_players = len(player_keys)
+# """
+# recursively assign players to teams by first assigning the start and end of the player list.
+# """
+# def assignPlayers(player_keys, teams, players):
+#     num_teams = len(teams)
+#     num_players = len(player_keys)
 
-    # base case and repeat every recursive iteration: assign "outer rows" of players
-    if num_players < num_teams:
-        sortTeams(teams, players, reverse=True)
-    assignSequential(player_keys[:num_teams], teams, players)
-    assignSequential(list(reversed(player_keys[num_teams:])), teams, players)
+#     # base case and repeat every recursive iteration: assign "outer rows" of players
+#     if num_players < num_teams:
+#         sortTeams(teams, players, reverse=True)
+#     assignSequential(player_keys[:num_teams], teams, players)
+#     assignSequential(list(reversed(player_keys[num_teams:])), teams, players)
 
-    # assign inner rows
-    if num_players > num_teams * 2:
-        assignPlayers(player_keys[num_teams:-num_teams], teams, players)
+#     # assign inner rows
+#     if num_players > num_teams * 2:
+#         assignPlayers(player_keys[num_teams:-num_teams], teams, players)
 
 
-"""
-assign a list of players to the teams in sequential order.
-"""
-def assignSequential(player_keys, teams, players):
-    i = 0
+# """
+# assign a list of players to the teams in sequential order.
+# """
+# def assignSequential(player_keys, teams, players):
+#     i = 0
 
-    for p in player_keys:
-        added_player = False
+#     for p in player_keys:
+#         added_player = False
 
-        while not added_player:
-            if i == len(teams):
-                i = 0
+#         while not added_player:
+#             if i == len(teams):
+#                 i = 0
 
-            team = teams[i]
-            # TODO: handle conflicts
+#             team = teams[i]
+#             # TODO: handle conflicts
 
-            if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
-                team.append(p)
-                added_player = True
+#             if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
+#                 team.append(p)
+#                 added_player = True
 
-            i += 1
+#             i += 1
 
 
 """
 assign players to teams in a snaking pattern.
 """
-# def assignPlayers(player_keys, teams, players):
-#     i = 0
-#     for p in player_keys:
-#         # TODO: handle conflicts
-#         if i == len(teams):
-#             teams.reverse()
-#             i = 0
+def assignPlayers(player_keys, teams, players):
+    i = 0
+    sortTeams(teams, players, reverse=True)
 
-#         teams[i].add(p)
-#         i += 1
+    for p in player_keys:
+        added_player = False
 
-#     # retain original team order
-#     if ceil(len(player_keys) / len(teams)) % 2 == 0:
-#         teams.reverse()
+        while not added_player:
+            # turn the snake around
+            if i == len(teams):
+                teams.reverse()
+                i = 0
+
+            # don't add to team with more players until all teams reach same number of players
+            team = teams[i]
+            if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
+                team.append(p)
+                added_player = True
+
+            i += 1
 
 
 """

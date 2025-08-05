@@ -25,16 +25,14 @@ def main():
     w_groups = partitionByType(women, players)
     m_groups = partitionByType(men, players)
 
-    player_groups = w_groups + m_groups
-    # printScores(player_groups, players)
+    zipped_groups = list(zip(w_groups, m_groups))
+    player_groups = list(sum(zipped_groups, ()))
 
     # form teams
     teams = initTeams(len(players))
     for group in player_groups:
         assignPlayers(group, teams, players)
-        teams = invert(teams)
 
-    print("Teams:")
     sortTeams(teams, players)
     printTeamScores(teams, players)
 
