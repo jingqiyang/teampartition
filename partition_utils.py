@@ -100,14 +100,14 @@ def splitList(original_list, f):
 """
 create list of empty team lists.
 """
-# def initTeamLists(num_players):
-#     return [[] for x in range(0, ceil(num_players / MAX_TEAM_SIZE))]
+def initTeams(num_players):
+    return [[] for x in range(0, ceil(num_players / MAX_TEAM_SIZE))]
 
 
 """
 create list of empty team sets.
 """
-def initTeams(num_players):
+def initTeamSets(num_players):
     return [set() for x in range(0, ceil(num_players / MAX_TEAM_SIZE))]
 
 
@@ -155,7 +155,7 @@ def assignSequential(player_keys, teams, players):
             # TODO: handle conflicts
 
             if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
-                team.add(p)
+                team.append(p)
                 added_player = True
 
             i += 1
@@ -188,7 +188,7 @@ def sortTeams(teams, players, reverse=False):
 
 
 """
-print average player score of each team.
+print sorted players and player scores, followed by the average overall score of each team.
 """
 def printTeamScores(teams, players):
     for team in teams:
