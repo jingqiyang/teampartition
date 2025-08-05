@@ -307,7 +307,7 @@ def printTeamScores(teams, players):
 
         for p in team:
             print(p + " " + getScoreString(players[p][OVERALL]))
-        print("Team Score: " + getScoreString(getTeamScore(team, players)) + " (size " + str(len(team)) + ")\n")
+        print("team score: " + getScoreString(getTeamScore(team, players)) + " (size " + str(len(team)) + ")\n")
 
 
 
