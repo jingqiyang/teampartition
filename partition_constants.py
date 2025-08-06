@@ -1,8 +1,9 @@
-TEST_WB = "test_data.xlsx"
+TEST_WB = "test/test_data.xlsx"
 YES = "Y"
 F = "F"
 MAX_TEAM_SIZE = 8
 
+NAME = "Name"
 FIRST_NAME = "First Name"
 LAST_NAME = "Last Name"
 GENDER = "Gender"

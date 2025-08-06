@@ -173,28 +173,36 @@ def initTeamSets(num_players):
 
 
 """
-assign players to teams in a snaking pattern.
+assign players to teams in a snaking pattern. returns unassigned conflict players.
 """
-def assignTeams(player_keys, teams, players):
+def assignTeams(player_keys, teams, players, conflicts):
     i = 0
     sortTeams(teams, players, reverse=True)
 
     for p in player_keys:
-        added_player = False
+        assigned = False
+        started = False
+        init_i = i
 
-        while not added_player:
+        while not assigned and (not started or i != init_i):
+            started = True
+            team = teams[i]
+
+            # don't add to team with more players until all teams reach same number of players
+            if okToAdd(team, players[p], teams, players):
+                team.append(p)
+                assigned = True
+
+            i += 1
+
             # turn the snake around
             if i == len(teams):
                 teams.reverse()
                 i = 0
 
-            # don't add to team with more players until all teams reach same number of players
-            team = teams[i]
-            if okToAdd(team, players[p], teams, players):
-                team.append(p)
-                added_player = True
-
-            i += 1
+        # track conflict player to assign later
+        if not assigned:
+            conflicts.append(p)
 
 
 """
@@ -210,7 +218,7 @@ determine if a player can be added to a team.
 def okToAdd(team, player, teams, players):
     # check for acceptable team size
     if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
-        return noConflict(player, set(team))
+        return noConflict(player, team)
 
     return False
 
@@ -219,11 +227,34 @@ def okToAdd(team, player, teams, players):
 check if a player has no conflict with existing members of a team.
 """
 def noConflict(player, team):
+    team = set(team)
     for p in player[CONFLICTS]:
         if p in team:
             return False
 
     return True
+
+
+"""
+add unassigned conflict players and make swaps until all teams have enough players.
+"""
+def assignConflicts(teams, players, conflicts):
+    for i in range(len(conflicts) - 1, -1, -1):
+        p = conflicts[i]
+        assigned = False
+
+        # assign conflicts to teams that aren't full where possible
+        for team in teams:
+            if len(team) < MAX_TEAM_SIZE and noConflict(players[p], team):
+                team.append(p)
+                del conflicts[i]
+                assigned = True
+                break
+
+    # TODO: continually make swaps to assign remaining conflict players
+
+    if len(conflicts) > 0:
+        print("unassigned conflicts: " + ", ".join(conflicts) + "\n")
 
 
 """

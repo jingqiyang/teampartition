@@ -14,9 +14,12 @@ def main():
 
     # form teams from player groups
     player_groups = getPlayerGroups(players)
+    conflicts = []
     for group in player_groups:
-        assignTeams(group, teams, players)
+        assignTeams(group, teams, players, conflicts)
 
+    # clean up teams
+    assignConflicts(teams, players, conflicts)
     finalSwaps(teams, players)
     printTeamScores(teams, players)
 
