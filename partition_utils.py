@@ -114,8 +114,8 @@ def getScore(rating):
 get overall player score as a sum of offense/setting and defense, adjusted by if they're a senior.
 """
 def getOverallScore(player):
-    defense_rating = player[DEFENSE]
-    offense_rating = player[SETTING] if isSetter(player) else player[OFFENSE]
+    defense_rating = player[SETTING] if isSetter(player) else player[DEFENSE]
+    offense_rating = player[OFFENSE]
     senior_modifier = -1/3 if isSenior(player) else 0
 
     player[OVERALL] = getScore(offense_rating) + getScore(defense_rating) + senior_modifier
