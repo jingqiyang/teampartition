@@ -60,7 +60,7 @@ def partitionByType(player_keys, players):
     setters, hitters = splitList(player_keys, lambda p: isSetter(players[p]))
     seniors, young_hitters = splitList(hitters, lambda p: isSenior(players[p]))
 
-    return setters, seniors, young_hitters
+    return setters, young_hitters, seniors
 
 
 """
@@ -126,21 +126,21 @@ def rebalance(teams, players):
     sortTeams(teams, players)
     std = getTeamStd(teams, players)
 
-    # swap players at same index across teams with major to minor score difference
-    for i in range(0, len(teams[0])):
-        for j in range(0, int(len(teams) / 2)):
-            # try swap with adjacent indices
-            for k in range(i - 1, i + 2):
-                swap(teams[j], i, teams[-1 - j], k, players)
-                new_std = getTeamStd(teams, players)
+    # swap players at same index across teams
+    for i in range(0, len(teams)):
+        for j in range(i + 1, len(teams)):
+            for k in range(0, len(teams[i])):
+                for l in range(k - 1, k + 2):
+                    swap(teams[i], k, teams[j], l, players)
+                    new_std = getTeamStd(teams, players)
 
-                if new_std < std:
-                    std = new_std
-                else:
-                    # swap back if no improvement
-                    swap(teams[j], i, teams[-1 - j], k, players)
+                    if new_std < std:
+                        # print("swapped " + teams[i][k] + " with " + teams[j][l])
+                        std = new_std
+                    else:
+                        swap(teams[i], k, teams[j], l, players)
 
-        sortTeams(teams, players)
+            sortTeams(teams, players)
 
 
 if __name__ == '__main__':
