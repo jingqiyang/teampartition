@@ -90,6 +90,11 @@ def isSenior(player):
 def isSetter(player):
     return player[SETTER] == YES
 
+def isLibero(player):
+    return player[LIBERO] == YES
+
+def isWoman(player):
+    return player[GENDER] == F
 
 """
 convert yankee rating to numerical score.
@@ -162,6 +167,20 @@ def initTeamSets(num_players):
 
 
 """
+get maximum number of women and men allowed on a team to maintain balanced gender counts.
+"""
+def getGenderLimits(players, num_teams):
+    num_players = len(players)
+    num_women = sum(map(lambda p: isWoman(players[p]), players))
+    num_men = num_players - num_women
+
+    if MAX_TEAM_SIZE == 0:
+        return 0, 0
+
+    return ceil(num_women / num_teams), ceil(num_men / num_teams)
+
+
+"""
 sort teams by average player score.
 """
 def sortTeams(teams, players, reverse=False):
@@ -171,12 +190,23 @@ def sortTeams(teams, players, reverse=False):
 """
 determine if a player can be added to a team.
 """
-def okToAdd(team, player, teams, players):
+def okToAdd(team, player, teams, players, gender_limit):
+    if reachedGenderLimit(team, player, players, gender_limit):
+        return False
+
     # check for acceptable team size
     if len(team) < MAX_TEAM_SIZE - 1 or all(map(lambda t: len(t) >= MAX_TEAM_SIZE - 1, teams)):
         return noConflict(player, team)
 
     return False
+
+
+"""
+determine if the team already has the maximum number of allowed players of that gender.
+"""
+def reachedGenderLimit(team, player, players, gender_limit):
+    num_same_gender = sum(map(lambda p: players[p][GENDER] == player[GENDER], team))
+    return num_same_gender >= gender_limit
 
 
 """
@@ -237,6 +267,7 @@ get average overall score of players of a team.
 def getTeamScore(team, players):
     if len(team) == 0:
         return 0
+
     return sum(map(lambda p: players[p][OVERALL], team)) / len(team)
 
 

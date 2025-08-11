@@ -3,12 +3,15 @@ from partition_utils import *
 
 
 def main():
+    global max_women, max_men
+
     # load players of current year
     players = getPlayers()
     for p in players:
         getOverallScore(players[p])
 
     teams = initTeams(len(players))
+    max_women, max_men = getGenderLimits(players, len(teams))
 
     # assign players from each group to teams
     player_groups = getPlayerGroups(players)
@@ -27,7 +30,7 @@ get overall player score as a sum of offense/setting and defense, adjusted by if
 """
 def getOverallScore(player):
     defense_rating = player[SETTING] if isSetter(player) else player[DEFENSE]
-    offense_rating = player[OFFENSE]
+    offense_rating = player[DEFENSE] if isLibero(player) else player[OFFENSE]
     senior_modifier = -1/3 if isSenior(player) else 0
 
     player[OVERALL] = getScore(offense_rating) + getScore(defense_rating) + senior_modifier
@@ -75,9 +78,10 @@ def assignTeams(player_keys, teams, players, conflicts):
         while not assigned and (not started or i != init_i):
             started = True
             team = teams[i]
+            gender_limit = max_women if isWoman(players[p]) else max_men
 
             # don't add to team with more players until all teams reach same number of players
-            if okToAdd(team, players[p], teams, players):
+            if okToAdd(team, players[p], teams, players, gender_limit):
                 team.append(p)
                 assigned = True
 
